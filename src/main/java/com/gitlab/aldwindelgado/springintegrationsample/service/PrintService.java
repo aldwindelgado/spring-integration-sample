@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class PrintService {
 
 
-    @ServiceActivator(inputChannel = "directInputChannel", outputChannel = "directOutputChannel")
+    @ServiceActivator(inputChannel = "directInputChannel")
     public Message<?> print(Message<String> message) {
         log.info("[###] Message from print service: {}", message.getPayload());
 

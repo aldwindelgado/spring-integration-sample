@@ -19,13 +19,4 @@ public class IntegrationConfig {
         return new DirectChannel();
     }
 
-    @Bean
-    public DirectChannel directOutputChannel() {
-        return new DirectChannel();
-    }
-
-//    @Bean
-//    public MessageChannel pubSubChannel() {
-//        return new PublishSubscribeChannel();
-//    }
 }
