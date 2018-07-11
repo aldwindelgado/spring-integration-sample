@@ -15,14 +15,9 @@ import org.springframework.messaging.support.MessageBuilder;
 @Slf4j
 @SpringBootApplication
 public class Application implements ApplicationRunner {
-
-    private final PrintService printService;
-    //    private final DirectChannel directInputChannel;
     private final PrintGateway printGateway;
 
-    public Application(PrintService printService, PrintGateway printGateway) {
-        this.printService = printService;
-//        this.directInputChannel = directInputChannel;
+    public Application(PrintGateway printGateway) {
         this.printGateway = printGateway;
     }
 
