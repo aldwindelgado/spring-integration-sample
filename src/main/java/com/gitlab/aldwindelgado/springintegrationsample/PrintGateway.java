@@ -5,9 +5,9 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.Message;
 
-@MessagingGateway(defaultRequestChannel = "queueInputChannel")
+@MessagingGateway(defaultRequestChannel = "inputChannel")
 public interface PrintGateway {
 
-    @Gateway(requestChannel = "queueInputChannel")
+    @Gateway(requestChannel = "inputChannel")
     Future<Message<String>> print(Message<?> message);
 }
