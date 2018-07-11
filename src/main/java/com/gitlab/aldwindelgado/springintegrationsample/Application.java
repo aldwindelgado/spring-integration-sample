@@ -1,13 +1,14 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
 import com.gitlab.aldwindelgado.springintegrationsample.service.PrintService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.core.MessagingTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -16,12 +17,13 @@ import org.springframework.messaging.support.MessageBuilder;
 public class Application implements ApplicationRunner {
 
     private final PrintService printService;
-    private final DirectChannel directInputChannel;
+    //    private final DirectChannel directInputChannel;
+    private final PrintGateway printGateway;
 
-    public Application(PrintService printService,
-        DirectChannel directInputChannel) {
+    public Application(PrintService printService, PrintGateway printGateway) {
         this.printService = printService;
-        this.directInputChannel = directInputChannel;
+//        this.directInputChannel = directInputChannel;
+        this.printGateway = printGateway;
     }
 
     public static void main(String[] args) {
@@ -30,18 +32,21 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        List<Future<Message<String>>> futures = new ArrayList<>();
 
-//        directOutputChannel
-//            .subscribe(messageHandler -> log.info("[###] {}", messageHandler.getPayload()));
+        for (int i = 0; i < 10; i++) {
+            Message<String> message = MessageBuilder
+                .withPayload(
+                    String.format("PAYLOAD %d", i))
+                .setHeader("X-MESSAGE-NUMBER", 500)
+                .setHeader("X-COUNTER", i)
+                .build();
+            log.info("[###] Sending out the message: {}", message);
+            futures.add(this.printGateway.print(message));
+        }
 
-        Message<String> message = MessageBuilder.withPayload("Hello there! :)")
-            .setHeader("X-Key", "X-Value").build();
-
-//        log.info("[###] {}", message);
-//        directInputChannel.send(message);
-
-        MessagingTemplate template = new MessagingTemplate();
-        Message returnedMessage = template.sendAndReceive(directInputChannel, message);
-        log.info("[###] Returned message: {}", returnedMessage);
+        for (Future<Message<String>> future : futures) {
+            log.info("[###] From future loop: {}", future.get().getPayload());
+        }
     }
 }

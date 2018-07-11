@@ -1,10 +1,11 @@
 package com.gitlab.aldwindelgado.springintegrationsample.service;
 
-import java.util.Map.Entry;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +17,18 @@ import org.springframework.stereotype.Service;
 public class PrintService {
 
 
-    @ServiceActivator(inputChannel = "directInputChannel")
-    public Message<?> print(Message<String> message) {
-        log.info("[###] Message from print service: {}", message.getPayload());
-
-        MessageHeaders headers = message.getHeaders();
-
-        for (Entry<String, Object> entry : headers.entrySet()) {
-            log.info("[###] Key: {}", entry.getKey());
-            log.info("[###] Value: {}", entry.getValue());
-        }
-
+    @ServiceActivator(inputChannel = "queueInputChannel",
+        poller = @Poller(fixedRate = "5000", maxMessagesPerPoll = "2"))
+    public Message<?> print(Message<String> message, @Headers Map<String, Object> headers) {
         log.info("[###] Payload: {}", message.getPayload());
-        return MessageBuilder.withPayload("This is the updated message").build();
+        log.info("[###] Headers Params: {}", headers);
+        int messageNumber = Integer.class.cast(message.getHeaders().get("X-MESSAGE-NUMBER"));
+        int counterNumber = Integer.class.cast(message.getHeaders().get("X-COUNTER"));
+        return MessageBuilder
+            .withPayload(String
+                .format("Sending a reply for %s with message number of %s", counterNumber,
+                    messageNumber))
+            .build();
     }
 
 }
