@@ -18,7 +18,7 @@ public class PrintService {
 
 
     @ServiceActivator(inputChannel = "inputChannel",
-        poller = @Poller(fixedRate = "5000", maxMessagesPerPoll = "2"))
+        poller = @Poller(fixedRate = "5000", maxMessagesPerPoll = "4"))
     public Message<?> print(Message<String> message, @Headers Map<String, Object> headers) {
         log.info("[###] Payload: {}", message.getPayload());
 //        log.info("[###] Headers Params: {}", headers);

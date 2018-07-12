@@ -35,7 +35,6 @@ public class Application implements ApplicationRunner {
                     String.format("PAYLOAD %d", i))
                 .setHeader("X-MESSAGE-NUMBER", 500)
                 .setHeader("X-COUNTER", i)
-                .setPriority(i)
                 .build();
             log.info("[###] Sending out the message: {}", message);
             futures.add(this.printGateway.print(message));
