@@ -27,7 +27,7 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<Future<Message<String>>> futures = new ArrayList<>();
+//        List<Future<Message<String>>> futures = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
             Message<String> message = MessageBuilder
@@ -37,11 +37,12 @@ public class Application implements ApplicationRunner {
                 .setHeader("X-COUNTER", i)
                 .build();
             log.info("[###] Sending out the message: {}", message);
-            futures.add(this.printGateway.print(message));
+//            futures.add(this.printGateway.print(message));
+            this.printGateway.print(message);
         }
 
-        for (Future<Message<String>> future : futures) {
-            log.info("[###] From future loop: {}", future.get().getPayload());
-        }
+//        for (Future<Message<String>> future : futures) {
+//            log.info("[###] From future loop: {}", future.get().getPayload());
+//        }
     }
 }
