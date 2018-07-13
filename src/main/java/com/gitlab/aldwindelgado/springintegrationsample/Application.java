@@ -1,8 +1,5 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,22 +24,20 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        List<Future<Message<String>>> futures = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            Message<String> message = MessageBuilder
-                .withPayload(
-                    String.format("PAYLOAD %d", i))
-                .setHeader("X-MESSAGE-NUMBER", 500)
-                .setHeader("X-COUNTER", i)
+//            Message<?> message = MessageBuilder
+//                .withPayload(
+//                    String.format("PAYLOAD %d", i))
+//                .setHeader("X-COUNTER", i)
+//                .build();
+
+            Message<?> message = MessageBuilder
+                .withPayload(i)
                 .build();
             log.info("[###] Sending out the message: {}", message);
-//            futures.add(this.printGateway.print(message));
             this.printGateway.print(message);
         }
 
-//        for (Future<Message<String>> future : futures) {
-//            log.info("[###] From future loop: {}", future.get().getPayload());
-//        }
     }
 }

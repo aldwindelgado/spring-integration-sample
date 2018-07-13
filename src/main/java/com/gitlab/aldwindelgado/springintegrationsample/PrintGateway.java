@@ -5,9 +5,9 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.Message;
 
-@MessagingGateway(defaultRequestChannel = "pollableChannel")
+@MessagingGateway(defaultRequestChannel = "inputChannel")
 public interface PrintGateway {
 
-    @Gateway(requestChannel = "pollableChannel")
+    @Gateway(requestChannel = "inputChannel")
     Future<Message<String>> print(Message<?> message);
 }
