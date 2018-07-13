@@ -1,2 +1,9 @@
+management.endpoints.web.exposure.include: "loggers"
+
 server:
   port: 9090
+
+logging:
+    path: "/tmp/spring-integration.log"
+    level:
+        com.gitlab: DEBUG

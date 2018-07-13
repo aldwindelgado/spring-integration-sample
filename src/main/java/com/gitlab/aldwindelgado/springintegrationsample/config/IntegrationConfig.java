@@ -4,6 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.integration.annotation.BridgeFrom;
+import org.springframework.integration.annotation.BridgeTo;
+import org.springframework.integration.annotation.Poller;
+import org.springframework.integration.channel.PriorityChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -17,6 +21,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class IntegrationConfig {
 
     @Bean
+    public PriorityChannel pollableChannel() {
+        return new PriorityChannel(10);
+    }
+
+    @Bean
+    @BridgeFrom(value = "pollableChannel", poller = @Poller(fixedDelay = "5000", maxMessagesPerPoll = "2"))
     public PublishSubscribeChannel inputChannel() {
         return new PublishSubscribeChannel(customTaskExecutor());
     }

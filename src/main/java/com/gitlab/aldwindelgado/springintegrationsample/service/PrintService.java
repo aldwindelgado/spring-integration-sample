@@ -4,6 +4,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.integration.annotation.MessageEndpoint;
+import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -20,7 +21,7 @@ public class PrintService {
 
     @ServiceActivator(inputChannel = "inputChannel")
     public Message<?> print(Message<String> message, @Headers Map<String, Object> headers) {
-        log.info("[###] Payload: {}", message.getPayload());
+        log.debug("[###] Payload: {}", message.getPayload());
 //        log.info("[###] Headers Params: {}", headers);
         int messageNumber = Integer.class.cast(message.getHeaders().get("X-MESSAGE-NUMBER"));
         int counterNumber = Integer.class.cast(message.getHeaders().get("X-COUNTER"));
