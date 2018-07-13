@@ -16,7 +16,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 public class PrintService {
 
     @ServiceActivator(inputChannel = "stringChannel")
-    public Message<?> print(Message<String> message, @Headers Map<String, Object> headers) {
+    public Message<?> print(Message<?> message, @Headers Map<String, Object> headers) {
         log.debug("[###] Payload: {}", message.getPayload());
 //        log.info("[###] Headers Params: {}", headers);
         int counterNumber = Integer.class.cast(message.getHeaders().get("X-COUNTER"));

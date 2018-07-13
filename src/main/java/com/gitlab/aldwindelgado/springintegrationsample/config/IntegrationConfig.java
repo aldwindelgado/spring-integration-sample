@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
-import org.springframework.integration.router.PayloadTypeRouter;
+import org.springframework.integration.router.HeaderValueRouter;
 
 /**
  * @author Aldwin Delgado
@@ -23,10 +23,12 @@ public class IntegrationConfig {
 
     @Bean
     @ServiceActivator(inputChannel = "inputChannel")
-    public PayloadTypeRouter router() {
-        PayloadTypeRouter router = new PayloadTypeRouter();
-        router.setChannelMapping(Integer.class.getName(), "intChannel");
-        router.setChannelMapping(String.class.getName(), "stringChannel");
+    public HeaderValueRouter router() {
+        HeaderValueRouter router = new HeaderValueRouter("X-ROUTER");
+//        router.setResolutionRequired);
+        router.setChannelMapping("to-int", "intChannel");
+        router.setChannelMapping("to-string", "stringChannel");
+
         return router;
     }
 
