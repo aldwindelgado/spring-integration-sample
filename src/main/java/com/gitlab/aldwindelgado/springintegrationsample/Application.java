@@ -28,20 +28,8 @@ public class Application implements ApplicationRunner {
         for (int i = 0; i < 10; i++) {
             Message<?> message = MessageBuilder
                 .withPayload(i)
-                .setHeader("X-ROUTER", "to-string")
-                .setHeader("X-COUNTER", i)
                 .build();
             log.info("[###] Sending out the message: {}", message);
-            this.printGateway.print(message);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            Message<?> message = MessageBuilder
-                .withPayload(i)
-                .setHeader("X-ROUTER", "to-int")
-                .setHeader("X-COUNTER", i)
-                .build();
-            log.info("[###] Sending out the message to numeric: {}", message);
             this.printGateway.print(message);
         }
 

@@ -15,13 +15,11 @@ import org.springframework.messaging.handler.annotation.Headers;
 @MessageEndpoint
 public class PrintService {
 
-    @ServiceActivator(inputChannel = "stringChannel")
+    @ServiceActivator(inputChannel = "outputChannel")
     public Message<?> print(Message<?> message, @Headers Map<String, Object> headers) {
         log.debug("[###] Payload: {}", message.getPayload());
-//        log.info("[###] Headers Params: {}", headers);
-        int counterNumber = Integer.class.cast(message.getHeaders().get("X-COUNTER"));
         return MessageBuilder
-            .withPayload(String.format("Sending a reply for %s", counterNumber))
+            .withPayload(String.format("Sending a reply for %s", message.getPayload()))
             .build();
     }
 
