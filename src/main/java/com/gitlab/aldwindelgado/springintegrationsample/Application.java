@@ -28,7 +28,7 @@ public class Application implements ApplicationRunner {
 
         for (int i = 0; i < 10; i++) {
             Message<?> message = MessageBuilder
-                .withPayload(i)
+                .withPayload(String.format("Launching in %s", i))
                 .build();
             log.info("[###] Sending out the message: {}", message);
             this.printGateway.print(message);
