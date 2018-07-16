@@ -1,5 +1,6 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
+import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

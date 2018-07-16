@@ -1,4 +1,4 @@
-package com.gitlab.aldwindelgado.springintegrationsample;
+package com.gitlab.aldwindelgado.springintegrationsample.gateway;
 
 import java.util.concurrent.Future;
 import org.springframework.integration.annotation.Gateway;
