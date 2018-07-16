@@ -26,9 +26,10 @@ public class Application implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        for (int i = 0; i < 10; i++) {
+        String[] payloads = {"A B", "C D", "E F"};
+        for (int i = 0; i < payloads.length; i++) {
             Message<?> message = MessageBuilder
-                .withPayload(String.format("Launching in %s", i))
+                .withPayload(payloads[i])
                 .build();
             log.info("[###] Sending out the message: {}", message);
             this.printGateway.print(message);
