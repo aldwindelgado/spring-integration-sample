@@ -11,16 +11,15 @@ import org.springframework.messaging.Message;
  */
 @Slf4j
 @MessageEndpoint
-public class NumericPrintService {
+public class DefaultService {
 
-    @ServiceActivator(inputChannel = "intChannel")
+    @ServiceActivator(inputChannel = "defaultChannel")
     public Message<?> print(Message<?> message) {
-        log.debug("[###] NUMBER Payload: {}", message.getPayload());
-//        log.info("[###] Headers Params: {}", headers);
-        int counterNumber = Integer.class.cast(message.getHeaders().get("X-COUNTER"));
-        return MessageBuilder
-            .withPayload(String.format("Sending a reply for %s", counterNumber))
-            .build();
-    }
+        log.debug("[###] DEFAULT channel: {}", message.getPayload());
 
+        return MessageBuilder
+            .withPayload("Replying from default channel")
+            .build();
+
+    }
 }

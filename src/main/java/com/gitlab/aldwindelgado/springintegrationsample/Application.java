@@ -29,6 +29,7 @@ public class Application implements ApplicationRunner {
             Message<?> message = MessageBuilder
                 .withPayload(i)
                 .setHeader("X-ROUTER", "to-string")
+                .setHeader("X-COUNTER", i)
                 .build();
             log.info("[###] Sending out the message: {}", message);
             this.printGateway.print(message);
@@ -38,6 +39,7 @@ public class Application implements ApplicationRunner {
             Message<?> message = MessageBuilder
                 .withPayload(i)
                 .setHeader("X-ROUTER", "to-int")
+                .setHeader("X-COUNTER", i)
                 .build();
             log.info("[###] Sending out the message to numeric: {}", message);
             this.printGateway.print(message);

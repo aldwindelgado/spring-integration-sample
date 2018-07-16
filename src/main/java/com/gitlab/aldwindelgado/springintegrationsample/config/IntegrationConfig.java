@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
-import org.springframework.integration.router.HeaderValueRouter;
+import org.springframework.integration.router.RecipientListRouter;
 
 /**
  * @author Aldwin Delgado
@@ -16,6 +16,11 @@ import org.springframework.integration.router.HeaderValueRouter;
 @EnableIntegration
 public class IntegrationConfig {
 
+//    @Bean
+//    public DirectChannel defaultChannel() {
+//        return new DirectChannel();
+//    }
+
     @Bean
     public DirectChannel inputChannel() {
         return new DirectChannel();
@@ -23,12 +28,15 @@ public class IntegrationConfig {
 
     @Bean
     @ServiceActivator(inputChannel = "inputChannel")
-    public HeaderValueRouter router() {
-        HeaderValueRouter router = new HeaderValueRouter("X-ROUTER");
-//        router.setResolutionRequired);
-        router.setChannelMapping("to-int", "intChannel");
-        router.setChannelMapping("to-string", "stringChannel");
-
+    public RecipientListRouter router() {
+        RecipientListRouter router = new RecipientListRouter();
+//        router.setSendTimeout(1); // 1 second timeout
+        router.setApplySequence(true); // send the headers to the channels downstream
+        router.addRecipient("intChannel", "headers.containsKey('X-CUSTOM')");
+//        router.addRecipient("intChannel");
+        router.addRecipient("stringChannel");
+        router.addRecipient("defaultChannel");
+        router.setDefaultOutputChannelName("defaultChannel");
         return router;
     }
 
