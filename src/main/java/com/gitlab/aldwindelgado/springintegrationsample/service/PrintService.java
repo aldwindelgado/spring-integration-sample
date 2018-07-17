@@ -1,12 +1,11 @@
 package com.gitlab.aldwindelgado.springintegrationsample.service;
 
-import java.util.Map;
+import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.Headers;
 
 /**
  * @author Aldwin Delgado
@@ -15,11 +14,22 @@ import org.springframework.messaging.handler.annotation.Headers;
 @MessageEndpoint
 public class PrintService {
 
-    @ServiceActivator(inputChannel = "outputChannel")
-    public Message<?> print(Message<?> message, @Headers Map<String, Object> headers) {
-        log.debug("[###] Payload: {}", message.getPayload());
+    @ServiceActivator(inputChannel = "outputDtoChannel")
+    public Message<String> print(Message<SampleDTO> message) {
+//        log.info("[###] Version: {}", version);
+        log.info("[###] RECEIVED Message DTO: {}", message.getPayload());
+        log.info("[###] RECEIVED Message Headers DTO: {}", message.getHeaders());
         return MessageBuilder
-            .withPayload(String.format("Sending a reply for %s", message.getPayload()))
+            .withPayload(message.getPayload().toString())
+            .build();
+    }
+
+    @ServiceActivator(inputChannel = "discardDtoChannel")
+    public Message<String> printDiscard(Message<SampleDTO> message) {
+        log.info("[###] DISCARDED Message DTO: {}", message.getPayload());
+        log.info("[###] DISCARDED Message Headers DTO: {}", message.getHeaders());
+        return MessageBuilder
+            .withPayload(message.getPayload().toString())
             .build();
     }
 

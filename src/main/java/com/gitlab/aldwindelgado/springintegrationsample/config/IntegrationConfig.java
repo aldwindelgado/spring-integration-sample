@@ -1,17 +1,20 @@
 package com.gitlab.aldwindelgado.springintegrationsample.config;
 
+import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.Aggregator;
-import org.springframework.integration.annotation.Splitter;
-import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.annotation.CorrelationStrategy;
+import org.springframework.integration.annotation.ReleaseStrategy;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.scheduling.PollerMetadata;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.scheduling.support.PeriodicTrigger;
 
 /**
  * @author Aldwin Delgado
@@ -22,36 +25,48 @@ import org.springframework.messaging.Message;
 public class IntegrationConfig {
 
     @Bean
-    public DirectChannel inputChannel() {
-        return new DirectChannel();
+    public QueueChannel inputDtoChannel() {
+        return new QueueChannel(20);
     }
 
     @Bean
-    public DirectChannel outputChannel() {
-        return new DirectChannel();
+    public QueueChannel outputDtoChannel() {
+        return new QueueChannel(20);
     }
 
     @Bean
-    public DirectChannel aggregatorChannel() {
-        return new DirectChannel();
+    public QueueChannel discardDtoChannel() {
+        return new QueueChannel(20);
     }
 
-    @Splitter(inputChannel = "inputChannel", outputChannel = "aggregatorChannel")
-    public List<String> splitter(Message<String> message) {
-        return new ArrayList<>(Arrays.asList(message.getPayload().split(" ")));
+    @Bean(PollerMetadata.DEFAULT_POLLER)
+    public PollerMetadata defaulPoller() {
+        PollerMetadata metadata = new PollerMetadata();
+        metadata.setTrigger(new PeriodicTrigger(2000));
+        metadata.setMaxMessagesPerPoll(5);
+        return metadata;
     }
 
-    @Aggregator(inputChannel = "aggregatorChannel", outputChannel = "outputChannel")
-    public Message<?> aggregate(List<Message<String>> messages) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Message<String> message : messages) {
-            log.info("[###] Aggregate Payload: {}", message.getPayload().toUpperCase());
-            stringBuilder.append(message.getPayload());
-            stringBuilder.append("+++");
+    @Aggregator(inputChannel = "inputDtoChannel", outputChannel = "outputDtoChannel", discardChannel = "discardDtoChannel")
+    public Message<List<SampleDTO>> aggregateDto(List<SampleDTO> dtos) {
+        List<SampleDTO> sampleDtos = new ArrayList<>();
+        for (SampleDTO sampleDto : dtos) {
+            log.info("[###] AGGREGATOR: {}", sampleDto);
+            sampleDtos.add(sampleDto);
         }
 
-        log.info("[###] Built string: {}", stringBuilder.toString());
-        return MessageBuilder.withPayload(stringBuilder.toString()).build();
+        return MessageBuilder.withPayload(sampleDtos).build();
     }
 
+    @ReleaseStrategy
+    public boolean canBeRelease(List<SampleDTO> dtos) {
+        log.info("[###] RELEASE STRAT: {}", dtos);
+        return dtos.size() == 2;
+    }
+
+    @CorrelationStrategy
+    public String groupByVersion(SampleDTO dto) {
+        log.info("[###] CORRELATION STRAT: {}", dto);
+        return dto.getVersion().toString();
+    }
 }

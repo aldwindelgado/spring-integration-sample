@@ -1,6 +1,10 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
+import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -25,15 +29,56 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        String[] names = {
+            "Liliana Shirey",
+            "Christopher Burke",
+            "Eliseo Laughlin",
+            "Kanisha Doby",
+            "Octavia Witzel",
+            "Verna Deckman",
+            "Xavier Orear",
+            "Jenette Kelliher",
+            "Shayne Eberhard",
+            "Lelia Don",
+            "Janice Hudman",
+            "Brigida Tarnowski"
+        };
 
-        String[] payloads = {"A B", "C D", "E F"};
-        for (int i = 0; i < payloads.length; i++) {
-            Message<?> message = MessageBuilder
-                .withPayload(payloads[i])
-                .build();
-            log.info("[###] Sending out the message: {}", message);
-            this.printGateway.print(message);
+        doSomething(this.populateDTO(names));
+    }
+
+    private List<SampleDTO> populateDTO(String[] names) {
+
+        List<SampleDTO> dtos = new ArrayList<>();
+
+        SampleDTO dto = new SampleDTO();
+        int counter = names.length - 1;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 3; j++) {
+                dto.setFirstName(names[counter].split(" ")[0]);
+                dto.setLastName(names[counter].split(" ")[1]);
+                dto.setVersion(i);
+                dtos.add(dto); // add to list
+
+                dto = new SampleDTO();
+                counter--;
+            }
         }
 
+        return dtos;
     }
+
+    private void doSomething(List<SampleDTO> dtos) {
+        List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
+
+        for (int i = 0; i < dtos.size(); i++) {
+            log.info("[###] DTO: {}", dtos.get(i));
+            Message<SampleDTO> message = MessageBuilder
+                .withPayload(dtos.get(i))
+                .build();
+            futures.add(this.printGateway.printDTO(message));
+        }
+    }
+
 }
