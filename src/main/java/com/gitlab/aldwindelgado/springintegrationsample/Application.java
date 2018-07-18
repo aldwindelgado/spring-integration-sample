@@ -1,11 +1,12 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
@@ -53,36 +54,33 @@ public class Application implements ApplicationRunner {
         doSomething(this.populateDTO(names));
     }
 
-    private List<SampleDTO> populateDTO(String[] names) {
+    private List<Map<Object, Object>> populateDTO(String[] names) {
 
-        List<SampleDTO> dtos = new ArrayList<>();
+        Map<Object, Object> shitMap;
+        List<Map<Object, Object>> theMap = new ArrayList<>();
 
-        SampleDTO dto = new SampleDTO();
         int counter = names.length - 1;
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 3; j++) {
-                dto.setFirstName(names[counter].split(" ")[0]);
-                dto.setLastName(names[counter].split(" ")[1]);
-                dto.setVersion(i);
-                dtos.add(dto); // add to list
-
-                dto = new SampleDTO();
+                shitMap = new HashMap<>();
+                shitMap.put("firstName", names[counter].split(" ")[0]);
+                shitMap.put("lastName", names[counter].split(" ")[1]);
+                shitMap.put("version", i);
+                theMap.add(shitMap); // add to list
                 counter--;
             }
         }
 
-        return dtos;
+        return theMap;
     }
 
-    private void doSomething(List<SampleDTO> dtos) throws JsonProcessingException {
+    private void doSomething(List<Map<Object, Object>> dtos) {
         List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
-            log.info("[###] DTO's JSON: {}",
-                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dtos.get(i)));
-            Message<String> message = MessageBuilder
-                .withPayload(
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dtos.get(i)))
+            log.info("[###] DTO's MAP: {}", dtos.get(i));
+            Message<Map<Object, Object>> message = MessageBuilder
+                .withPayload(dtos.get(i))
                 .build();
             futures.add(this.printGateway.printDTOString(message));
         }
