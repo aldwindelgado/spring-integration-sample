@@ -14,29 +14,10 @@ import org.springframework.messaging.Message;
 @MessageEndpoint
 public class PrintService {
 
-    @ServiceActivator(inputChannel = "outputDtoChannel")
-    public Message<String> print(Message<SampleDTO> message) {
-//        log.info("[###] Version: {}", version);
-        log.info("[###] RECEIVED Message DTO: {}", message.getPayload());
-        log.info("[###] RECEIVED Message Headers DTO: {}", message.getHeaders());
-        return MessageBuilder
-            .withPayload(message.getPayload().toString())
-            .build();
-    }
-
-    @ServiceActivator(inputChannel = "discardDtoChannel")
-    public Message<String> printFromDiscard(Message<SampleDTO> message) {
-        log.info("[###] DISCARDED Message DTO: {}", message.getPayload());
-        log.info("[###] DISCARDED Message Headers DTO: {}", message.getHeaders());
-        return MessageBuilder
-            .withPayload(message.getPayload().toString())
-            .build();
-    }
-
-    @ServiceActivator(inputChannel = "outputStringChannel")
-    public Message<String> printDtoToString(Message<String> message) {
-        log.info("[###] RECEIVED DTO TO STRING Message DTO: {}", message.getPayload());
-        log.info("[###] RECEIVED DTO TO STRING Message Headers DTO: {}", message.getHeaders());
+    @ServiceActivator(inputChannel = "outputChannel")
+    public Message<SampleDTO> printJsonToDto(Message<SampleDTO> message) {
+        log.info("[###] Sending reply message DTO: {}", message.getPayload());
+        log.info("[###] Sending reply message Headers DTO: {}", message.getHeaders());
 
         return MessageBuilder
             .withPayload(message.getPayload())

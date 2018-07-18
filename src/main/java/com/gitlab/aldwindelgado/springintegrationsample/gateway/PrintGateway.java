@@ -6,9 +6,9 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.Message;
 
-@MessagingGateway(defaultRequestChannel = "inputDtoChannel")
+@MessagingGateway(defaultRequestChannel = "inputChannel")
 public interface PrintGateway {
 
-    @Gateway(requestChannel = "inputDtoChannel")
-    Future<Message<String>> printDTOString(Message<SampleDTO> message);
+    @Gateway(requestChannel = "inputChannel")
+    Future<Message<SampleDTO>> printDTOString(Message<String> message);
 }

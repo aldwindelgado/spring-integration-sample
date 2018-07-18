@@ -1,5 +1,7 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
@@ -19,9 +21,12 @@ import org.springframework.messaging.Message;
 public class Application implements ApplicationRunner {
 
     private final PrintGateway printGateway;
+    private final ObjectMapper mapper;
 
-    public Application(PrintGateway printGateway) {
+    public Application(PrintGateway printGateway,
+        ObjectMapper mapper) {
         this.printGateway = printGateway;
+        this.mapper = mapper;
     }
 
     public static void main(String[] args) {
@@ -70,13 +75,14 @@ public class Application implements ApplicationRunner {
         return dtos;
     }
 
-    private void doSomething(List<SampleDTO> dtos) {
-        List<Future<Message<String>>> futures = new ArrayList<>();
-
+    private void doSomething(List<SampleDTO> dtos) throws JsonProcessingException {
+        List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
-            log.info("[###] DTO: {}", dtos.get(i));
-            Message<SampleDTO> message = MessageBuilder
-                .withPayload(dtos.get(i))
+            log.info("[###] DTO's JSON: {}",
+                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dtos.get(i)));
+            Message<String> message = MessageBuilder
+                .withPayload(
+                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dtos.get(i)))
                 .build();
             futures.add(this.printGateway.printDTOString(message));
         }
