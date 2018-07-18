@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.json.ObjectToJsonTransformer;
 import org.springframework.integration.scheduling.PollerMetadata;
-import org.springframework.integration.transformer.ObjectToStringTransformer;
 import org.springframework.messaging.Message;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
@@ -42,7 +42,7 @@ public class IntegrationConfig {
     }
 
     @Transformer(inputChannel = "inputDtoChannel", outputChannel = "outputStringChannel")
-    public Message<?> toStringTransformer(Message<SampleDTO> message) {
-        return new ObjectToStringTransformer().transform(message);
+    public Message<?> toJsonStringTransformer(Message<SampleDTO> message) {
+        return new ObjectToJsonTransformer().transform(message);
     }
 }
