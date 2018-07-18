@@ -25,11 +25,21 @@ public class PrintService {
     }
 
     @ServiceActivator(inputChannel = "discardDtoChannel")
-    public Message<String> printDiscard(Message<SampleDTO> message) {
+    public Message<String> printFromDiscard(Message<SampleDTO> message) {
         log.info("[###] DISCARDED Message DTO: {}", message.getPayload());
         log.info("[###] DISCARDED Message Headers DTO: {}", message.getHeaders());
         return MessageBuilder
             .withPayload(message.getPayload().toString())
+            .build();
+    }
+
+    @ServiceActivator(inputChannel = "outputStringChannel")
+    public Message<String> printDtoToString(Message<String> message) {
+        log.info("[###] RECEIVED DTO TO STRING Message DTO: {}", message.getPayload());
+        log.info("[###] RECEIVED DTO TO STRING Message Headers DTO: {}", message.getHeaders());
+
+        return MessageBuilder
+            .withPayload(message.getPayload())
             .build();
     }
 

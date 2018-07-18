@@ -71,14 +71,14 @@ public class Application implements ApplicationRunner {
     }
 
     private void doSomething(List<SampleDTO> dtos) {
-        List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
+        List<Future<Message<String>>> futures = new ArrayList<>();
 
         for (int i = 0; i < dtos.size(); i++) {
             log.info("[###] DTO: {}", dtos.get(i));
             Message<SampleDTO> message = MessageBuilder
                 .withPayload(dtos.get(i))
                 .build();
-            futures.add(this.printGateway.printDTO(message));
+            futures.add(this.printGateway.printDTOString(message));
         }
 
         futures.forEach(messageFuture -> {

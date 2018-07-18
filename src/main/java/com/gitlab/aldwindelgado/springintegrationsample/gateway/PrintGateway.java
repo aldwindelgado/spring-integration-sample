@@ -10,6 +10,5 @@ import org.springframework.messaging.Message;
 public interface PrintGateway {
 
     @Gateway(requestChannel = "inputDtoChannel")
-    Future<Message<SampleDTO>> printDTO(Message<SampleDTO> message);
-
+    Future<Message<String>> printDTOString(Message<SampleDTO> message);
 }
