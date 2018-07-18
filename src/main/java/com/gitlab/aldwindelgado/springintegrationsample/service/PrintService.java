@@ -16,8 +16,8 @@ public class PrintService {
 
     @ServiceActivator(inputChannel = "outputChannel")
     public Message<SampleDTO> printJsonToDto(Message<SampleDTO> message) {
-        log.info("[###] Sending reply message DTO: {}", message.getPayload());
-        log.info("[###] Sending reply message Headers DTO: {}", message.getHeaders());
+//        log.info("[###] Sending reply message DTO: {}", message.getPayload());
+//        log.info("[###] Sending reply message Headers DTO: {}", message.getHeaders());
 
         return MessageBuilder
             .withPayload(message.getPayload())

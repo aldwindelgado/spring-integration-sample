@@ -81,13 +81,17 @@ public class Application implements ApplicationRunner {
             log.info("[###] DTO's MAP: {}", dtos.get(i));
             Message<Map<Object, Object>> message = MessageBuilder
                 .withPayload(dtos.get(i))
+                .setHeader("X-HEADER", "This is my FIRST HEADER SHIT")
+                .setHeader("X-HEADER-2", "This is my SECOND HEADER SHIT")
+                .setHeader("X-HEADER-3", "This is my THIRD HEADER SHIT")
                 .build();
             futures.add(this.printGateway.printDTOString(message));
         }
 
         futures.forEach(messageFuture -> {
             try {
-                log.info("[###] Future shit: {}", messageFuture.get().getPayload());
+                log.info("[###] Future shit PAYLOAD: {}", messageFuture.get().getPayload());
+                log.info("[###] Future shit HEADERS: {}", messageFuture.get().getHeaders());
             } catch (InterruptedException | ExecutionException e) {
                 log.info("[EXCEPTION] Error: {}", e.getMessage());
             }
