@@ -4,6 +4,7 @@ import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -79,6 +80,14 @@ public class Application implements ApplicationRunner {
                 .build();
             futures.add(this.printGateway.printDTO(message));
         }
+
+        futures.forEach(messageFuture -> {
+            try {
+                log.info("[###] Future shit: {}", messageFuture.get().getPayload());
+            } catch (InterruptedException | ExecutionException e) {
+                log.info("[EXCEPTION] Error: {}", e.getMessage());
+            }
+        });
     }
 
 }
