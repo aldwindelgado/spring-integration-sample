@@ -12,7 +12,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 
 @Slf4j
@@ -75,11 +74,11 @@ public class Application implements ApplicationRunner {
         List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
             log.info("[###] DTO's MAP: {}", dtos.get(i));
-            Message<SampleDTO> message = MessageBuilder
-                .withPayload(dtos.get(i))
-                .setHeader("replyChannel", "outputChannel")
-                .build();
-            futures.add(this.printGateway.printDTOString(message));
+//            Message<SampleDTO> message = MessageBuilder
+//                .withPayload(dtos.get(i))
+//                .setHeader("replyChannel", "outputChannel")
+//                .build();
+            futures.add(this.printGateway.print(dtos.get(i)));
         }
 
         futures.forEach(messageFuture -> {

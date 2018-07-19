@@ -4,8 +4,6 @@ import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.support.MessageBuilder;
-import org.springframework.messaging.Message;
 
 /**
  * @author Aldwin Delgado
@@ -15,27 +13,22 @@ import org.springframework.messaging.Message;
 public class PrintService {
 
     @ServiceActivator(inputChannel = "outputChannel")
-    public Message<SampleDTO> printDto(Message<SampleDTO> message) {
-//        log.info("[###] Sending reply message DTO: {}", message.getPayload());
-//        log.info("[###] Sending reply message Headers DTO: {}", message.getHeaders());
+    public SampleDTO printDto(SampleDTO sampleDTO) {
+        SampleDTO sampleDTO1 = sampleDTO;
+        sampleDTO1.setFullName(sampleDTO.getFullName().toUpperCase());
 
-        return MessageBuilder
-            .withPayload(message.getPayload())
-            .build();
+        return sampleDTO1;
     }
 
-    @ServiceActivator(inputChannel = "inputChannel")
-    public Message<SampleDTO> evaluateSampleDto(Message<SampleDTO> message) {
+    @ServiceActivator(inputChannel = "inputChannel", outputChannel = "outputChannel")
+    public SampleDTO evaluateSampleDto(SampleDTO sampleDTO) {
 
-        SampleDTO sampleDTO = new SampleDTO();
-        sampleDTO.setVersion(message.getPayload().getVersion());
-        sampleDTO.setFullName(String.format("%s, %s",
-            message.getPayload().getLastName(), message.getPayload().getFirstName()));
-        sampleDTO.setFirstName(null);
-        sampleDTO.setLastName(null);
+        SampleDTO sampleDTO1 = new SampleDTO();
+        sampleDTO1.setVersion(sampleDTO.getVersion());
+        sampleDTO1.setFullName(String.format("%s, %s",
+            sampleDTO.getLastName(), sampleDTO.getFirstName()));
 
-        return MessageBuilder.withPayload(sampleDTO)
-            .build();
+        return sampleDTO1;
     }
 
 }
