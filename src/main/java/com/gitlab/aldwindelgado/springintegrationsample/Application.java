@@ -1,10 +1,8 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -22,12 +20,9 @@ import org.springframework.messaging.Message;
 public class Application implements ApplicationRunner {
 
     private final PrintGateway printGateway;
-    private final ObjectMapper mapper;
 
-    public Application(PrintGateway printGateway,
-        ObjectMapper mapper) {
+    public Application(PrintGateway printGateway) {
         this.printGateway = printGateway;
-        this.mapper = mapper;
     }
 
     public static void main(String[] args) {
@@ -54,20 +49,21 @@ public class Application implements ApplicationRunner {
         doSomething(this.populateDTO(names));
     }
 
-    private List<Map<Object, Object>> populateDTO(String[] names) {
+    private List<SampleDTO> populateDTO(String[] names) {
 
         Map<Object, Object> shitMap;
-        List<Map<Object, Object>> theMap = new ArrayList<>();
+        List<SampleDTO> theMap = new ArrayList<>();
+        SampleDTO sampleDTO;
 
         int counter = names.length - 1;
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 3; j++) {
-                shitMap = new HashMap<>();
-                shitMap.put("firstName", names[counter].split(" ")[0]);
-                shitMap.put("lastName", names[counter].split(" ")[1]);
-                shitMap.put("version", i);
-                theMap.add(shitMap); // add to list
+                sampleDTO = new SampleDTO();
+                sampleDTO.setFirstName(names[counter].split(" ")[0]);
+                sampleDTO.setLastName(names[counter].split(" ")[1]);
+                sampleDTO.setVersion(i);
+                theMap.add(sampleDTO); // add to list
                 counter--;
             }
         }
@@ -75,15 +71,13 @@ public class Application implements ApplicationRunner {
         return theMap;
     }
 
-    private void doSomething(List<Map<Object, Object>> dtos) {
+    private void doSomething(List<SampleDTO> dtos) {
         List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
             log.info("[###] DTO's MAP: {}", dtos.get(i));
-            Message<Map<Object, Object>> message = MessageBuilder
+            Message<SampleDTO> message = MessageBuilder
                 .withPayload(dtos.get(i))
-                .setHeader("X-HEADER", "This is my FIRST HEADER SHIT")
-                .setHeader("X-HEADER-2", "This is my SECOND HEADER SHIT")
-                .setHeader("X-HEADER-3", "This is my THIRD HEADER SHIT")
+                .setHeader("replyChannel", "outputChannel")
                 .build();
             futures.add(this.printGateway.printDTOString(message));
         }

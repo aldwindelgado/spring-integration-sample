@@ -17,6 +17,7 @@ public class SampleDTO implements Serializable {
 
     private String firstName;
     private String lastName;
+    private String fullName;
     private Integer version;
 
 }

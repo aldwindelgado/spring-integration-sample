@@ -15,12 +15,26 @@ import org.springframework.messaging.Message;
 public class PrintService {
 
     @ServiceActivator(inputChannel = "outputChannel")
-    public Message<SampleDTO> printJsonToDto(Message<SampleDTO> message) {
+    public Message<SampleDTO> printDto(Message<SampleDTO> message) {
 //        log.info("[###] Sending reply message DTO: {}", message.getPayload());
 //        log.info("[###] Sending reply message Headers DTO: {}", message.getHeaders());
 
         return MessageBuilder
             .withPayload(message.getPayload())
+            .build();
+    }
+
+    @ServiceActivator(inputChannel = "inputChannel")
+    public Message<SampleDTO> evaluateSampleDto(Message<SampleDTO> message) {
+
+        SampleDTO sampleDTO = new SampleDTO();
+        sampleDTO.setVersion(message.getPayload().getVersion());
+        sampleDTO.setFullName(String.format("%s, %s",
+            message.getPayload().getLastName(), message.getPayload().getFirstName()));
+        sampleDTO.setFirstName(null);
+        sampleDTO.setLastName(null);
+
+        return MessageBuilder.withPayload(sampleDTO)
             .build();
     }
 
