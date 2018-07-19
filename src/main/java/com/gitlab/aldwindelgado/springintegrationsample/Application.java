@@ -1,27 +1,32 @@
 package com.gitlab.aldwindelgado.springintegrationsample;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.messaging.Message;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Slf4j
 @SpringBootApplication
 public class Application implements ApplicationRunner {
 
     private final PrintGateway printGateway;
+    private final ObjectMapper objectMapper;
 
-    public Application(PrintGateway printGateway) {
+    public Application(PrintGateway printGateway,
+        ObjectMapper objectMapper) {
         this.printGateway = printGateway;
+        this.objectMapper = objectMapper;
     }
 
     public static void main(String[] args) {
@@ -71,24 +76,40 @@ public class Application implements ApplicationRunner {
     }
 
     private void doSomething(List<SampleDTO> dtos) {
-        List<Future<Message<SampleDTO>>> futures = new ArrayList<>();
         for (int i = 0; i < dtos.size(); i++) {
             log.info("[###] DTO's MAP: {}", dtos.get(i));
 //            Message<SampleDTO> message = MessageBuilder
 //                .withPayload(dtos.get(i))
 //                .setHeader("replyChannel", "outputChannel")
 //                .build();
-            futures.add(this.printGateway.print(dtos.get(i)));
+            ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
+                .printWithoutHeader(dtos.get(i));
+            theFuture.addCallback(new ListenableFutureCallback<Message<SampleDTO>>() {
+                @Override
+                public void onFailure(Throwable ex) {
+                    log.info("[###] FAILURE MESSAGE: {}", ex.getMessage());
+                }
+
+                @Override
+                public void onSuccess(Message<SampleDTO> result) {
+                    log.info("[###] SUCCESS PAYLOAD: {}",
+                        prettifyToJsonString(result.getPayload()));
+                    log.info("[###] SUCCESS HEADERS: {}",
+                        prettifyToJsonString(result.getHeaders()));
+                }
+            });
+        }
+    }
+
+    private String prettifyToJsonString(Object object) {
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException jpe) {
+            log.error("[###] JPE ORIG MSG: {}", jpe.getOriginalMessage());
+            log.error("[###] JPE MSG: {}", jpe.getMessage());
         }
 
-        futures.forEach(messageFuture -> {
-            try {
-                log.info("[###] Future shit PAYLOAD: {}", messageFuture.get().getPayload());
-                log.info("[###] Future shit HEADERS: {}", messageFuture.get().getHeaders());
-            } catch (InterruptedException | ExecutionException e) {
-                log.info("[EXCEPTION] Error: {}", e.getMessage());
-            }
-        });
+        return null;
     }
 
 }

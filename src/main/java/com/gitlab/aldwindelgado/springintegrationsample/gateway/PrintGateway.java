@@ -6,6 +6,7 @@ import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.GatewayHeader;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.Message;
+import org.springframework.util.concurrent.ListenableFuture;
 
 @MessagingGateway(
     defaultRequestChannel = "inputChannel",
@@ -26,6 +27,6 @@ public interface PrintGateway {
     Future<Message<SampleDTO>> print(SampleDTO sampleDTO);
 
     @Gateway(requestChannel = "inputChannel")
-    Future<Message<SampleDTO>> printWithoutHeader(SampleDTO sampleDTO);
+    ListenableFuture<Message<SampleDTO>> printWithoutHeader(SampleDTO sampleDTO);
 
 }
