@@ -26,7 +26,9 @@ public interface PrintGateway {
     )
     Future<Message<SampleDTO>> print(SampleDTO sampleDTO);
 
-    @Gateway(requestChannel = "inputChannel")
+    @Gateway(requestChannel = "transformerChannel")
     ListenableFuture<Message<SampleDTO>> printWithoutHeader(SampleDTO sampleDTO);
 
+    @Gateway(requestChannel = "httpOutboundChannel")
+    ListenableFuture<Message<SampleDTO>> printWithoutHeader(String sampleDTO);
 }

@@ -83,11 +83,13 @@ public class Application implements ApplicationRunner {
 //                .setHeader("replyChannel", "outputChannel")
 //                .build();
             ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
+//                .printWithoutHeader(prettifyToJsonString(dtos.get(i)));
                 .printWithoutHeader(dtos.get(i));
             theFuture.addCallback(new ListenableFutureCallback<Message<SampleDTO>>() {
                 @Override
                 public void onFailure(Throwable ex) {
                     log.info("[###] FAILURE MESSAGE: {}", ex.getMessage());
+                    ex.printStackTrace();
                 }
 
                 @Override
