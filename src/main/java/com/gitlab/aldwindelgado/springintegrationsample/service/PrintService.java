@@ -56,7 +56,7 @@ public class PrintService {
 //    }
 
     @ServiceActivator(inputChannel = "httpRequestChannel")
-    public Message<?> httpRequestChannel(Message<SampleDTO> message) {
+    public Message<?> httpRequestChannel(Message<?> message) {
         log.info("[###] HTTP REQUEST CHANNEL: {}", message);
         return MessageBuilder.fromMessage(message).build();
     }

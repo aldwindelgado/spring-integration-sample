@@ -85,7 +85,7 @@ public class Application implements ApplicationRunner {
             ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
 //                .printWithoutHeader(prettifyToJsonString(dtos.get(i)));
                 .printWithoutHeader(dtos.get(i));
-            theFuture.addCallback(new ListenableFutureCallback<Message<SampleDTO>>() {
+            theFuture.addCallback(new ListenableFutureCallback<Message<?>>() {
                 @Override
                 public void onFailure(Throwable ex) {
                     log.info("[###] FAILURE MESSAGE: {}", ex.getMessage());
@@ -93,7 +93,7 @@ public class Application implements ApplicationRunner {
                 }
 
                 @Override
-                public void onSuccess(Message<SampleDTO> result) {
+                public void onSuccess(Message<?> result) {
                     log.info("[###] SUCCESS PAYLOAD: {}",
                         prettifyToJsonString(result.getPayload()));
                     log.info("[###] SUCCESS HEADERS: {}",
