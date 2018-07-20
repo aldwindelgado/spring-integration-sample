@@ -1,12 +1,17 @@
 package com.gitlab.aldwindelgado.springintegrationsample.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.integration.annotation.Aggregator;
+import org.springframework.integration.annotation.CorrelationStrategy;
+import org.springframework.integration.annotation.ReleaseStrategy;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.channel.QueueChannel;
@@ -14,8 +19,10 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.http.inbound.HttpRequestHandlingMessagingGateway;
 import org.springframework.integration.http.inbound.RequestMapping;
 import org.springframework.integration.http.outbound.HttpRequestExecutingMessageHandler;
+import org.springframework.integration.json.JsonToObjectTransformer;
 import org.springframework.integration.json.ObjectToJsonTransformer;
 import org.springframework.integration.scheduling.PollerMetadata;
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.support.PeriodicTrigger;
@@ -51,7 +58,12 @@ public class IntegrationConfig {
     }
 
     @Bean
-    public MessageChannel transformerChannel() {
+    public MessageChannel toJsonTransformerChannel() {
+        return new QueueChannel(10);
+    }
+
+    @Bean
+    public MessageChannel fromJsonTransformerChannel() {
         return new QueueChannel(10);
     }
 
@@ -70,8 +82,8 @@ public class IntegrationConfig {
         log.info("[###] INBOUND GATEWAY");
         HttpRequestHandlingMessagingGateway gateway = new HttpRequestHandlingMessagingGateway();
         gateway.setRequestMapping(postMapping());
-        gateway.setRequestPayloadType(ResolvableType.forClass(SampleDTO.class));
-        gateway.setRequestChannel(httpRequestChannel());
+        gateway.setRequestPayloadTypeClass(SampleDTO[].class);
+        gateway.setRequestChannel(fromJsonTransformerChannel());
         return gateway;
     }
 
@@ -98,9 +110,40 @@ public class IntegrationConfig {
 
     // TODO: Create a shitty transformer here
     // Refer to: https://stackoverflow.com/questions/20083604/spring-integration-how-to-pass-post-request-parameters-to-http-outbound?rq=1
-    @Transformer(inputChannel = "transformerChannel", outputChannel = "httpOutboundChannel")
-    public Message<?> toJsonStringTransformer(Message<SampleDTO> message) {
-        log.info("[###] TRANSFORMER: {}", message);
+    @Transformer(inputChannel = "toJsonTransformerChannel", outputChannel = "httpOutboundChannel")
+    public Message<?> toJsonStringTransformer(Message<?> message) {
+        log.info("[###] TO JSON STRING TRANSFORMER: {}", message);
         return new ObjectToJsonTransformer().transform(message);
+    }
+
+    @Transformer(inputChannel = "fromJsonTransformerChannel", outputChannel = "httpRequestChannel")
+    public Message<?> fromJsonTransformer(Message<?> message) {
+        log.info("[###] FROM JSON TRANSFORMER: {}", message);
+        return new JsonToObjectTransformer().transform(message);
+    }
+
+    @CorrelationStrategy
+    public String groupByVersion(SampleDTO dto) {
+        log.info("[###] CORRELATION STRAT: {}", dto);
+        return dto.getVersion().toString();
+    }
+
+    @ReleaseStrategy
+    public boolean canBeRelease(List<SampleDTO> dtos) {
+        log.info("[###] RELEASE STRAT: {}", dtos);
+        return dtos.size() == 3;
+    }
+
+    @Aggregator(inputChannel = "aggregatorChannel", outputChannel = "toJsonTransformerChannel")
+    public Message<?> aggregateDto(List<SampleDTO> dtos) {
+        List<SampleDTO> theDtos = new ArrayList<>();
+
+        for (SampleDTO sampleDTO : dtos) {
+            theDtos.add(sampleDTO);
+        }
+
+        log.info("[###] AGGREGATOR: {}", theDtos);
+
+        return MessageBuilder.withPayload(theDtos).build();
     }
 }
