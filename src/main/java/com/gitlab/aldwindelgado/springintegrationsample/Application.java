@@ -84,7 +84,7 @@ public class Application implements ApplicationRunner {
 //                .build();
             ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
 //                .printWithoutHeader(prettifyToJsonString(dtos.get(i)));
-                .printWithoutHeader(dtos.get(i));
+                .print(dtos.get(i));
             theFuture.addCallback(new ListenableFutureCallback<Message<?>>() {
                 @Override
                 public void onFailure(Throwable ex) {
@@ -101,25 +101,6 @@ public class Application implements ApplicationRunner {
                 }
             });
         }
-
-//        log.info("[###] DTO's LIST: {}", dtos);
-//        ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
-//            .printWithoutHeader(dtos);
-//        theFuture.addCallback(new ListenableFutureCallback<Message<SampleDTO>>() {
-//            @Override
-//            public void onFailure(Throwable ex) {
-//                log.info("[###] FAILURE MESSAGE: {}", ex.getMessage());
-//                ex.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onSuccess(Message<SampleDTO> result) {
-//                log.info("[###] SUCCESS PAYLOAD: {}",
-//                    prettifyToJsonString(result.getPayload()));
-//                log.info("[###] SUCCESS HEADERS: {}",
-//                    prettifyToJsonString(result.getHeaders()));
-//            }
-//        });
     }
 
     private String prettifyToJsonString(Object object) {
