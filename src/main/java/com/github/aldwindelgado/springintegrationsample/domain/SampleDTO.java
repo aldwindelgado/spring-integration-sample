@@ -1,4 +1,4 @@
-package com.gitlab.aldwindelgado.springintegrationsample.domain;
+package com.github.aldwindelgado.springintegrationsample.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

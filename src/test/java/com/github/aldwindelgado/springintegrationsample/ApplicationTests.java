@@ -1,4 +1,4 @@
-package com.gitlab.aldwindelgado.springintegrationsample;
+package com.github.aldwindelgado.springintegrationsample;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

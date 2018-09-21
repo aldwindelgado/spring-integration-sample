@@ -1,13 +1,12 @@
-package com.gitlab.aldwindelgado.springintegrationsample.config;
+package com.github.aldwindelgado.springintegrationsample.config;
 
-import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
+import com.github.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.integration.aggregator.MessageCountReleaseStrategy;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -16,7 +15,6 @@ import org.springframework.integration.dsl.Transformers;
 import org.springframework.integration.handler.LoggingHandler.Level;
 import org.springframework.integration.http.dsl.Http;
 import org.springframework.integration.scheduling.PollerMetadata;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
@@ -28,8 +26,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
 @EnableIntegration
 public class IntegrationConfig {
 
-        private final String TEST_URL = "http://localhost:7777/testing";
-//    private final String TEST_URL = "http://localhost:9090/testing";
+    private final String TEST_URL = "http://localhost:7777/testing";
 
     @Bean
     public MessageChannel inputChannel() {

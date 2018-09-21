@@ -1,6 +1,6 @@
-package com.gitlab.aldwindelgado.springintegrationsample.gateway;
+package com.github.aldwindelgado.springintegrationsample.gateway;
 
-import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
+import com.github.aldwindelgado.springintegrationsample.domain.SampleDTO;
 import org.springframework.integration.annotation.Gateway;
 import org.springframework.integration.annotation.GatewayHeader;
 import org.springframework.integration.annotation.MessagingGateway;

@@ -1,12 +1,11 @@
-package com.gitlab.aldwindelgado.springintegrationsample;
+package com.github.aldwindelgado.springintegrationsample;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gitlab.aldwindelgado.springintegrationsample.domain.SampleDTO;
-import com.gitlab.aldwindelgado.springintegrationsample.gateway.PrintGateway;
+import com.github.aldwindelgado.springintegrationsample.domain.SampleDTO;
+import com.github.aldwindelgado.springintegrationsample.gateway.PrintGateway;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -55,7 +54,6 @@ public class Application implements ApplicationRunner {
 
     private List<SampleDTO> populateDTO(String[] names) {
 
-        Map<Object, Object> shitMap;
         List<SampleDTO> theMap = new ArrayList<>();
         SampleDTO sampleDTO;
 
@@ -78,12 +76,7 @@ public class Application implements ApplicationRunner {
     private void doSomething(List<SampleDTO> dtos) {
         for (int i = 0; i < dtos.size(); i++) {
             log.info("[###] DTO's MAP: {}", dtos.get(i));
-//            Message<SampleDTO> message = MessageBuilder
-//                .withPayload(dtos.get(i))
-//                .setHeader("replyChannel", "outputChannel")
-//                .build();
             ListenableFuture<Message<SampleDTO>> theFuture = this.printGateway
-//                .printWithoutHeader(prettifyToJsonString(dtos.get(i)));
                 .print(dtos.get(i));
             theFuture.addCallback(new ListenableFutureCallback<Message<?>>() {
                 @Override
